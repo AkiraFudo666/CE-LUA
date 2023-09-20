@@ -1,0 +1,84 @@
+-- aobScanEx
+-- thanks panraven for this function (https://forum.cheatengine.org/viewtopic.php?t=577536)
+-- adjusted by SunBeam & Akira Fudo & LeFiXER
+function aobScanEx(start_address, end_address, aob, p, s, e)
+   if start_address == 0 or
+      start_address == nil or
+      start_address == '' or
+      end_address == 0 or
+      end_address == nil or
+      end_address == '' then
+      local p, a, n, s, e = p and '*X*W' or '+X', nil or fsmNotAligned, nil or '0', s and s or getAddress( process ), e and e or ( getAddress( process ) + getModuleSize( process ) )
+      local ms = pb and createMemScan( pb ) or createMemScan()
+      local fl = createFoundList( ms )
+      ms.firstScan( soExactValue, vtByteArray, nil, aob, nil, s, e, p, a, n, true, false, false, false )
+      ms.waitTillDone()
+      fl.initialize()
+      local result = nil
+      if fl ~= nil and fl.getCount() > 0 then
+         result = createStringlist()
+         for i = 1, fl.getCount() do result.add( fl.getAddress( i - 1 ) ) end
+      end
+      fl.destroy()
+      ms.destroy()
+      return result
+   else
+      local protections = nil or '*X*W*C' --'+X*W*C'
+      local alignmenttype = nil or fsmNotAligned
+      local alignmentparam = nil or '0'
+      local start = getAddressSafe(start_address) or 0x0
+      local finish = getAddressSafe(end_address) or 0xffffffffffffffff
+      local isHexInput = true
+      local isNotBinaryString = false
+      local isUnicodeScan = false
+      local isCaseSensitive = false
+
+      --local memscan = createMememscancan()
+      local memscan = createMemScan()
+      local foundlist = createFoundList(memscan)
+      memscan.firstScan(soExactValue, vtByteArray, nil, aob, nil, start, finish, protections, alignmenttype, alignmentparam, isHexInput, isNotBinaryString, isUnicodeScan, isCaseSensitive)
+      memscan.waitTillDone()
+      foundlist.Initialize()
+      local result = nil
+      if foundlist ~= nil and foundlist.getCount() > 0 then
+         result = createStringlist()
+         for i = 1, foundlist.getCount() do
+             result.add(foundlist.getAddress(i - 1))
+         end
+      end
+      foundlist.destroy()
+      memscan.destroy()
+      return result
+   end
+end
+--[[
+-- aobScanRegionEx
+function aobScanRegionEx(start_address, end_address, aob)
+   local protections = nil or '*X*W*C' --'+X*W*C'
+   local alignmenttype = nil or fsmNotAligned
+   local alignmentparam = nil or '0'
+   local start = getAddressSafe(start_address) or 0x0
+   local finish = getAddressSafe(end_address) or 0xffffffffffffffff
+   local isHexInput = true
+   local isNotBinaryString = false
+   local isUnicodeScan = false
+   local isCaseSensitive = false
+
+   --local memscan = createMememscancan()
+   local memscan = createMemScan()
+   local foundlist = createFoundList(memscan)
+   memscan.firstScan(soExactValue, vtByteArray, nil, aob, nil, start, finish, protections, alignmenttype, alignmentparam, isHexInput, isNotBinaryString, isUnicodeScan, isCaseSensitive)
+   memscan.waitTillDone()
+   foundlist.Initialize()
+   local result = nil
+   if foundlist ~= nil and foundlist.getCount() > 0 then
+      result = createStringlist()
+      for i = 1, foundlist.getCount() do
+          result.add(foundlist.getAddress(i - 1))
+      end
+   end
+   foundlist.destroy()
+   memscan.destroy()
+   return result
+end
+--]]
