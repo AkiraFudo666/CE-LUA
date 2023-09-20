@@ -1,0 +1,54 @@
+function openLink(link)
+  if type(link) == "string" and link ~= nil then
+     return shellExecute(link)
+  else
+     return nil
+  end
+end
+
+function mShowMessage(title, texttoshow, withbutton, link)
+  local myform = createForm(false)
+ myform.Caption = title
+ myform.autosize = true
+ myform.BorderStyle = 'bsDialog'
+ myform.Position = 'poScreenCenter'
+ myform.Color = GetAddressList().Control[0].BackgroundColor --0x000000
+
+ local font = createFont(myform)
+ font.Name = 'Consolas'
+ font.Height = -12
+ font.Size = 12
+ font.CharSet = 'ANSI_CHARSET'
+ font.pitch = 'fpFixed'
+ font.Quality = 'fqDraft'
+ font.Color = AddressList.CheckboxColor --0x0000FF
+
+ local mylabel = createLabel(myform)
+ mylabel.Caption = texttoshow
+ mylabel.OptimalFill = true
+ mylabel.font = font
+ mylabel.Align = 'alClient'
+ mylabel.left = (myform.width - mylabel.width) / 2
+ mylabel.BorderSpacing.Around = 25
+
+
+ if withbutton then
+   local mybtn = createButton(myform)
+   mybtn.height = 30
+   mybtn.left = (myform.width - mybtn.width) / 2
+   mybtn.top = myform.height - mybtn.height
+   mybtn.Align = 'alBottom'
+   mybtn.BorderSpacing.Around = 25
+   mybtn.Caption = 'Okay' --Button Name
+   mybtn.OnClick = function()
+                     if link == nil or link == '' then
+                        myform.hide()
+                        return
+                     else
+                        openLink(link)
+                        myform.hide()
+                     end
+                   end
+ end
+ myform.show()
+end
